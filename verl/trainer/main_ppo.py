@@ -31,6 +31,9 @@ from verl.utils.config import validate_config
 from verl.utils.device import auto_set_device, is_cuda_available
 from verl.utils.import_utils import deprecated
 
+import yoohtoolkits as ytk
+
+ytk.comm.plog('add ytk to verl source code succ!')
 
 @deprecated(
     "main_ppo.py is deprecated, and wil be replaced by main_ppo_sync.py in v0.8.0, please use main_ppo_sync.py instead."
