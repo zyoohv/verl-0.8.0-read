@@ -33,8 +33,6 @@ from verl.utils.import_utils import deprecated
 
 import yoohtoolkits as ytk
 
-ytk.comm.plog('add ytk to verl source code succ!')
-
 @deprecated(
     "main_ppo.py is deprecated, and wil be replaced by main_ppo_sync.py in v0.8.0, please use main_ppo_sync.py instead."
 )
@@ -45,6 +43,7 @@ def main(config):
     Args:
         config: Hydra configuration dictionary containing training parameters.
     """
+    ytk.comm.plog('add ytk plog to main_ppo.py')
     # Automatically set `config.trainer.device = npu` when running on Ascend NPU.
     auto_set_device(config)
     config = migrate_legacy_reward_impl(config)

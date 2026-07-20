@@ -105,6 +105,7 @@ from verl.workers.rollout.llm_server import LLMServerManager
 from verl.workers.utils.losses import value_loss
 from verl.workers.utils.padding import response_from_nested, response_to_nested
 
+import yoohtoolkits as ytk
 
 def apply_greedy_sampling_params(params: dict[str, Any]) -> None:
     params["top_p"] = 1.0
@@ -1847,6 +1848,9 @@ def main(config):
     Args:
         config: Hydra configuration dictionary containing training parameters.
     """
+
+    ytk.comm.plog('add ytk plog to main_ppo_sync.py')
+
     # Automatically set `config.trainer.device = npu` when running on Ascend NPU.
     auto_set_device(config)
 
