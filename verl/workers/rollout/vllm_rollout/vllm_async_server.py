@@ -76,6 +76,7 @@ if _VLLM_VERSION > version.parse("0.11.0"):
 else:
     from vllm.utils import FlexibleArgumentParser
 
+import yoohtoolkits as ytk
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.INFO)
@@ -361,6 +362,7 @@ class vLLMHttpServer:
 
         if self.replica_rank == 0:
             pprint(server_args)
+        ytk.comm.plog(f'yoohvzhang: server_args: {server_args}')
 
         CMD_MODULES = self._get_cli_modules()
         parser = FlexibleArgumentParser(description=self._get_cli_description())
