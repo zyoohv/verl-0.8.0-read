@@ -835,6 +835,7 @@ class RayPPOTrainer:
                 role=str(Role.RefPolicy),
             )
             self.resource_pool_to_cls[resource_pool][str(Role.RefPolicy)] = ref_policy_cls
+        ytk.comm.plog(f'yoohvzhang: resource_pool_to_cls = {self.resource_pool_to_cls}')
 
         # initialize WorkerGroup
         # NOTE: if you want to use a different resource pool for each role, which can support different parallel size,

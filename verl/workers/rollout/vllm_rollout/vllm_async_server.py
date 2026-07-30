@@ -431,6 +431,7 @@ class vLLMHttpServer:
 
         self.engine = engine_client
         self._server_port, self._server_task = await run_uvicorn(app, args, self._server_address)
+        ytk.comm.plog(f'yoohvzhang: run_server: {self._server_port}, {self._server_task}')
 
     async def run_headless(self, args: argparse.Namespace):
         """Run headless server in a separate thread."""
