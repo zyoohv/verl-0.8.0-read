@@ -1441,6 +1441,7 @@ class RayPPOTrainer:
                 batch.non_tensor_batch["uid"] = np.array(
                     [str(uuid.uuid4()) for _ in range(len(batch.batch))], dtype=object
                 )
+                ytk.comm.plog('yoohvzhang: initial batch.keys: {}'.format(batch.get_all_key_logs()))
 
                 gen_batch = self._get_gen_batch(batch)
 
@@ -1498,6 +1499,7 @@ class RayPPOTrainer:
                     # repeat to align with repeated responses in rollout
                     batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)
                     batch = batch.union(gen_batch_output)
+                    ytk.comm.plog('yoohvzhang: rollout batch.keys: {}'.format(batch.get_all_key_logs()))
 
                     if "response_mask" not in batch.batch.keys():
                         batch.batch["response_mask"] = compute_response_mask(batch)
@@ -1517,6 +1519,7 @@ class RayPPOTrainer:
                             continue
                         images_seqlens_all.extend(multi_modal_input["images_seqlens"].tolist())
                     batch.meta_info["images_seqlens"] = images_seqlens_all
+                    ytk.comm.plog('yoohvzhang: reward batch.keys: {}'.format(batch.get_all_key_logs()))
                     with marked_timer("reward", timing_raw, color="yellow"):
                         # compute reward model score
                         if self.use_rm and "rm_scores" not in batch.batch.keys():

@@ -423,6 +423,10 @@ class DataProto:
         self.non_tensor_batch = non_tensor_batch
         self.meta_info = meta_info
 
+    def get_all_key_logs(self):
+        return 'batch.keys: {}, non_tensor_batch.keys: {}, meta_info.keys: {}'.format(
+            list(self.batch.keys()), list(self.non_tensor_batch.keys()), list(self.meta_info.keys()))
+
     def save_to_disk(self, filepath):
         with open(filepath, "wb") as f:
             pickle.dump(self, f)
