@@ -1588,6 +1588,9 @@ class PPOTrainer:
         metrics.update(compute_spec_decode_metrics(spec_drafts, spec_accepts, spec_verifies, non_padding_mask))
 
     def fit(self):
+
+        ytk.comm.plog('yoohvzhang: run PPOTrainer.fit')
+
         if self._dump_executor._shutdown:
             self._init_dump_executor()
 
