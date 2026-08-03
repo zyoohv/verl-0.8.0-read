@@ -1368,6 +1368,7 @@ class RayPPOTrainer:
         to construct the PPO dataflow.
         The light-weight advantage computation is done on the driver process.
         """
+        ytk.comm.plog('yoohvzhang: run RayPPOTrainer.fit')
         if self._dump_executor._shutdown:
             self._init_dump_executor()
 

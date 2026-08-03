@@ -60,6 +60,7 @@ def run_ppo(config, task_runner_class=None) -> None:
                 model paths, and training hyperparameters.
         task_runner_class: For recipe to change TaskRunner.
     """
+    ytk.comm.plog('yoohvzhang: start run_ppo in main_ppo.py')
     # Check if Ray is not initialized
     if not ray.is_initialized():
         # Initialize Ray with a local cluster configuration
@@ -232,6 +233,7 @@ class TaskRunner:
             config: Training configuration object containing all parameters needed
                    for setting up and running the PPO training process.
         """
+        ytk.comm.plog(f'yoohvzhang: run TaskRunner.run with config: {config}')
         # Print the initial configuration. `resolve=True` will evaluate symbolic values.
         from pprint import pprint
 
