@@ -651,6 +651,7 @@ class PPOTrainer:
         wg_kwargs["device_name"] = self.config.trainer.device
         logger.info(f"worker group kwargs: {wg_kwargs}")
 
+        ytk.comm.plog(f'yoohvzhang: self.resource_pool_to_cls: {self.resource_pool_to_cls}')
         for resource_pool, class_dict in self.resource_pool_to_cls.items():
             if not class_dict:
                 continue
@@ -671,7 +672,8 @@ class PPOTrainer:
             value_loss_ = partial(value_loss, config=critic_cfg)
             self.critic_wg.set_loss_fn(value_loss_)
             logger.info("critic model engine initialized")
-
+        
+        ytk.comm.plog(f'yoohvzhang: all_wg: {all_wg}, actor_role: {actor_role}')
         # 6. initialize actor and ref model engine
         self.actor_rollout_wg = all_wg[str(actor_role)]
         self.actor_rollout_wg.init_model()
@@ -1692,6 +1694,7 @@ class PPOTrainer:
     def step(self, batch_dict: dict, metrics: dict, timing_raw: dict) -> KVBatchMeta:
         # 1. put batch to agent loop manager
         batch_dict["uid"] = np.array([str(uuid.uuid4()) for _ in range(len(batch_dict["raw_prompt"]))], dtype=object)
+        ytk.comm.plog('yoohvzhang: step.1 batch_dict: {}'.format(list(batch_dict.keys())))
         if self.config.algorithm.adv_estimator == core_algos.AdvantageEstimator.REMAX:
             rollout_n = self.config.actor_rollout_ref.rollout.n
             sampled_batch_dict = batch_dict.copy()
@@ -1817,9 +1820,11 @@ class TaskRunner:
             resource_pool_spec["teacher_pool"] = teacher_pool
             self.mapping[Role.TeacherModel] = "teacher_pool"
 
+        ytk.comm.plog(f'yoohvzhang: init_resource_pool_mgr with resource_pool_spec: {resource_pool_spec}, mapping: {self.mapping}')
         self.resource_pool_manager = ResourcePoolManager(resource_pool_spec=resource_pool_spec, mapping=self.mapping)
 
     def run(self, config):
+        ytk.comm.plog(f'yoohvzhang: run TaskRunner.run with config: {config}')
         pprint(OmegaConf.to_container(config, resolve=True))
         OmegaConf.resolve(config)
 
@@ -1852,7 +1857,7 @@ def main(config):
         config: Hydra configuration dictionary containing training parameters.
     """
 
-    ytk.comm.plog('add ytk plog to main_ppo_sync.py')
+    ytk.comm.plog('yoohvzhang: add ytk plog to main_ppo_sync.py')
 
     # Automatically set `config.trainer.device = npu` when running on Ascend NPU.
     auto_set_device(config)

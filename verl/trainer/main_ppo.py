@@ -43,7 +43,6 @@ def main(config):
     Args:
         config: Hydra configuration dictionary containing training parameters.
     """
-    ytk.comm.plog('add ytk plog to main_ppo.py')
     # Automatically set `config.trainer.device = npu` when running on Ascend NPU.
     auto_set_device(config)
     config = migrate_legacy_reward_impl(config)
@@ -233,7 +232,6 @@ class TaskRunner:
             config: Training configuration object containing all parameters needed
                    for setting up and running the PPO training process.
         """
-        ytk.comm.plog(f'yoohvzhang: run TaskRunner.run with config: {config}')
         # Print the initial configuration. `resolve=True` will evaluate symbolic values.
         from pprint import pprint
 
