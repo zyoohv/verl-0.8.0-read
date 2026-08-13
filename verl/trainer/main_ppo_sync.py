@@ -150,6 +150,7 @@ def compute_advantage_for_multi_trajectories(
             config=config,
         )
 
+    ytk.comm.plog(f'yoohvzhang: compute_advantage_for_multi_trajectories. batch_keys: {batch_keys}')
     # final session of each agent loop: {uid}_{session_id} => (index, row_index)
     final_sessions: dict[str, tuple[int, int]] = {}
     row_session_keys = []
@@ -1820,7 +1821,7 @@ class TaskRunner:
             resource_pool_spec["teacher_pool"] = teacher_pool
             self.mapping[Role.TeacherModel] = "teacher_pool"
 
-        ytk.comm.plog(f'yoohvzhang: init_resource_pool_mgr with resource_pool_spec: {resource_pool_spec}, mapping: {self.mapping}')
+        ytk.comm.plog(f'yoohvzhang: TaskRunner init_resource_pool_mgr with resource_pool_spec: {resource_pool_spec}, mapping: {self.mapping}')
         self.resource_pool_manager = ResourcePoolManager(resource_pool_spec=resource_pool_spec, mapping=self.mapping)
 
     def run(self, config):
