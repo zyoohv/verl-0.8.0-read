@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from verl.trainer.config.config import ModuleConfig
     from verl.workers.config.reward import RewardManagerConfig
 
+import yoohtoolkits as ytk
 
 def _call_with_kwargs(raw_fn, extra_kwargs, *args, **kwargs):
     """Calls `raw_fn` by merging `extra_kwargs` into call-time `kwargs`, with `extra_kwargs` taking precedence.
