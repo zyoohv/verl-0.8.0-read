@@ -134,6 +134,7 @@ class RewardLoopWorker:
             reward_router_address=self.reward_router_address,
             reward_model_tokenizer=self.reward_model_tokenizer,
         )
+        ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.reward_manager = {self.reward_manager}')
 
     async def compute_score_batch(self, data: DataProto) -> list[dict]:
         tasks = []
@@ -332,11 +333,14 @@ class RewardLoopManager:
             ]
         )
         outputs_flat = [item for sublist in outputs for item in sublist]
+        ytk.comm.plog(f'yoohvzhang: RewardLoopManager.compute_rm_score.outputs_flat = {outputs_flat}')
 
         # compute rm score
         scores = [item["reward_score"] for item in outputs_flat]
+        ytk.comm.plog(f'yoohvzhang: RewardLoopManager.compute_rm_score.scores = {scores}')
         rm_scores = self.reward_manager_cls.assemble_rm_scores(data, scores)
         batch = TensorDict({"rm_scores": rm_scores}, batch_size=len(data))
+        ytk.comm.plog(f'yoohvzhang: RewardLoopManager.compute_rm_score.batch = {batch}')
 
         reward_extra_infos = [output.get("reward_extra_info", {}) for output in outputs_flat]
         reward_extra_keys = list(reward_extra_infos[0].keys())
