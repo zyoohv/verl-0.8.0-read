@@ -70,6 +70,8 @@ def get_custom_reward_fn(config: DictConfig) -> Optional[RawRewardFn]:
 
     reward_fn_config = config.reward.get("custom_reward_function") or {}
     module_path = reward_fn_config.get("path")
+    ytk.comm.plog(f'yoohvzhang: get_custom_reward_fn.reward_fn_config = {reward_fn_config}')
+    ytk.comm.plog(f'yoohvzhang: get_custom_reward_fn.module_path = {module_path}')
     if not module_path:
         return None
 

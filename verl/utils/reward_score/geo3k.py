@@ -15,6 +15,8 @@ import re
 
 from mathruler.grader import extract_boxed_content, grade_answer
 
+import yoohtoolkits as ytk
+
 
 def format_reward(predict_str: str) -> float:
     pattern = re.compile(r"<think>.*</think>.*\\boxed\{.*\}.*", re.DOTALL)
@@ -31,6 +33,7 @@ def acc_reward(predict_str: str, ground_truth: str, use_boxed: bool = True) -> f
 
 
 def compute_score(predict_str: str, ground_truth: str, use_boxed: bool = True, format_score: float = 0.1) -> float:
+    ytk.comm.plog('yoohvzhang: geo3k.compute_score')
     return (1.0 - format_score) * acc_reward(predict_str, ground_truth, use_boxed) + format_score * format_reward(
         predict_str
     )

@@ -146,6 +146,7 @@ class RewardLoopWorker:
         return outputs
 
     async def compute_score(self, data: DataProto) -> dict:
+        ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.compute_score, path = {self.config.reward.custom_reward_function.path}')
         if self.config.reward.custom_reward_function.path is not None:
             # directly use user-customized reward function
             return await self.reward_manager.run_single(data)
