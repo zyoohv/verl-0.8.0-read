@@ -236,8 +236,8 @@ def compute_advantage(
         grpo_calculation_mask = data.batch["response_mask"]
 
         # Call compute_grpo_outcome_advantage with parameters matching its definition
-        ytk.comm.plog('yoohvzhang: compute_advantage.token_level_rewards: {}, with shape {}'.format(
-            data.batch["token_level_rewards"], data.batch["token_level_rewards"].shape))
+        # ytk.comm.plog('yoohvzhang: compute_advantage.token_level_rewards: {}, with shape {}'.format(
+        #     data.batch["token_level_rewards"], data.batch["token_level_rewards"].shape))
         advantages, returns = core_algos.compute_grpo_outcome_advantage(
             token_level_rewards=data.batch["token_level_rewards"],
             response_mask=grpo_calculation_mask,

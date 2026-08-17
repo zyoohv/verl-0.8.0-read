@@ -131,6 +131,7 @@ def load_reward_manager(config: DictConfig, tokenizer: Any, **reward_kwargs: Any
 
     default_compute_score_ = get_default_compute_score(reward_manager_cfg.name)
 
+    ytk.comm.plog(f'yoohvzhang: load_reward_manager.compute_score = {compute_score}')
     if compute_score is None:
         sandbox_config = config.reward.get("sandbox_fusion")
         sandbox_url = sandbox_config.get("url") if sandbox_config else None

@@ -150,7 +150,7 @@ def compute_advantage_for_multi_trajectories(
             config=config,
         )
 
-    ytk.comm.plog(f'yoohvzhang: compute_advantage_for_multi_trajectories. batch_keys: {batch_keys}')
+    # ytk.comm.plog(f'yoohvzhang: compute_advantage_for_multi_trajectories. batch_keys: {batch_keys}')
     # final session of each agent loop: {uid}_{session_id} => (index, row_index)
     final_sessions: dict[str, tuple[int, int]] = {}
     row_session_keys = []
@@ -722,6 +722,7 @@ class PPOTrainer:
             agent_loop_manager_cls = load_class_from_fqn(manager_class_fqn, "AgentLoopManager")
         else:
             agent_loop_manager_cls = AgentLoopManagerTQ
+        ytk.comm.plog(f'yoohvzhang: agent_loop_manager_cls: {agent_loop_manager_cls}')
         self.async_rollout_manager = agent_loop_manager_cls.create(
             config=self.config,
             llm_client=self.llm_server_manager.get_client(),
@@ -1721,6 +1722,7 @@ class PPOTrainer:
 
         # 3. [OPTIONAL] compute reward score with colocated reward model
         if self.reward_loop_manager.reward_loop_worker_handles is None:
+            ytk.comm.plog('yoohvzhang: step.3 compute_reward_colocate with batch {}'.format(list(batch.keys())))
             with marked_timer("reward", timing_raw, color="yellow"):
                 batch = self._compute_reward_colocate(batch)
 
