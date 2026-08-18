@@ -389,8 +389,9 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             return
 
         # [AgentLoopOutput(prompt_ids=...)]
-        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs {outputs}')
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs before {outputs}')
         await self._compute_score(outputs, kwargs=kwargs)
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs after {outputs}')
 
         final_output = outputs[-1]
         # final_output.reward_score : float
@@ -435,6 +436,8 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             field["input_ids"] = input_ids
             field["position_ids"] = position_ids
             field["multi_modal_inputs"] = multi_modal_inputs
+            if i == 0:
+                ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.field.keys {list(field.keys())}')
             fields.append(field)
             prompt_len, response_len = field["prompts"].size(0), field["responses"].size(0)
             tags.append(
@@ -1720,18 +1723,17 @@ class PPOTrainer:
         tu.assign_non_tensor_data(batch, "global_steps", self.global_steps)
         ytk.comm.plog('yoohvzhang: step.1 generate_sequences.input: {}'.format(list(batch.keys())))
         self.async_rollout_manager.generate_sequences(batch)
-        ytk.comm.plog('yoohvzhang: step.1 generate_sequences.output: {}'.format(list(batch.keys())))
 
         # 2. sample batch from replay buffer
         with marked_timer("gen", timing_raw, color="red"):
             batch = self.replay_buffer.sample(partition_id="train", global_steps=self.global_steps)
         batch.extra_info["temperature"] = self.config.actor_rollout_ref.rollout.temperature
         self.checkpoint_manager.sleep_replicas()
-        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer keys: {}'.format(list(batch.keys)))
+        # ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer keys: {}'.format(list(batch.keys)))
 
         # 3. [OPTIONAL] compute reward score with colocated reward model
         if self.reward_loop_manager.reward_loop_worker_handles is None:
-            ytk.comm.plog('yoohvzhang: step.3 compute_reward_colocate with batch.keys: {}'.format(list(batch.keys)))
+            # ytk.comm.plog('yoohvzhang: step.3 compute_reward_colocate with batch.keys: {}'.format(list(batch.keys)))
             with marked_timer("reward", timing_raw, color="yellow"):
                 batch = self._compute_reward_colocate(batch)
 
@@ -1740,7 +1742,7 @@ class PPOTrainer:
 
         # 4. balance batch across data parallel groups
         batch = self._balance_batch(batch, metrics=metrics)
-        ytk.comm.plog('yoohvzhang: step.4 balance batch batch.keys: {}'.format(list(batch.keys)))
+        # ytk.comm.plog('yoohvzhang: step.4 balance batch batch.keys: {}'.format(list(batch.keys)))
 
         # 5. compute old_log_prob
         with marked_timer("old_log_prob", timing_raw, color="blue"):

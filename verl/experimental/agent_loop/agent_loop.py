@@ -599,6 +599,7 @@ class AgentLoopWorker:
                 tools=ToolListWrap(self.tools),
             )
             output: AgentLoopOutput = await agent_loop.run(sampling_params, **kwargs)
+            # ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._run_agent_loop.output: {output}')
             return await self._agent_loop_postprocess(output, trajectory["validate"], **kwargs)
 
     def _pad_token_ids(
