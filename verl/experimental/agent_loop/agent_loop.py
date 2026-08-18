@@ -909,6 +909,7 @@ class AgentLoopWorker:
                 final_output.reward_score = result["reward_score"]
                 final_output.extra_fields["reward_extra_info"] = result["reward_extra_info"]
                 ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output.reward_score: {final_output.reward_score}')
+                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output: {final_output}')
             final_output.metrics.compute_score = timing["compute_score"]
 
     async def _compute_teacher_logprobs(
