@@ -388,11 +388,13 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             logger.warning(f"Empty output for prompt {uid}_{session_id}")
             return
 
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs {outputs}')
+        # [AgentLoopOutput(prompt_ids=...)]
+        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs {outputs}')
         await self._compute_score(outputs, kwargs=kwargs)
 
         final_output = outputs[-1]
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.final_output.reward_score {final_output.reward_score}')
+        # final_output.reward_score : float
+        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.final_output {final_output}')
         # TODO: Support output:list[AgentLoopOutput]
         await self._compute_teacher_logprobs(
             final_output,
@@ -1725,12 +1727,11 @@ class PPOTrainer:
             batch = self.replay_buffer.sample(partition_id="train", global_steps=self.global_steps)
         batch.extra_info["temperature"] = self.config.actor_rollout_ref.rollout.temperature
         self.checkpoint_manager.sleep_replicas()
-        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer dtype: {}'.format(type(batch)))
-        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer keys: {}'.format(list(batch.keys())))
+        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer keys: {}'.format(list(batch.keys)))
 
         # 3. [OPTIONAL] compute reward score with colocated reward model
         if self.reward_loop_manager.reward_loop_worker_handles is None:
-            ytk.comm.plog('yoohvzhang: step.3 compute_reward_colocate with batch {}'.format(list(batch.keys())))
+            ytk.comm.plog('yoohvzhang: step.3 compute_reward_colocate with batch.keys: {}'.format(list(batch.keys)))
             with marked_timer("reward", timing_raw, color="yellow"):
                 batch = self._compute_reward_colocate(batch)
 
@@ -1739,6 +1740,7 @@ class PPOTrainer:
 
         # 4. balance batch across data parallel groups
         batch = self._balance_batch(batch, metrics=metrics)
+        ytk.comm.plog('yoohvzhang: step.4 balance batch batch.keys: {}'.format(list(batch.keys)))
 
         # 5. compute old_log_prob
         with marked_timer("old_log_prob", timing_raw, color="blue"):
@@ -1755,6 +1757,7 @@ class PPOTrainer:
                 batch = self._compute_values(batch, metrics=metrics)
 
         # 8. compute advantage and return
+        ytk.comm.plog('yoohvzhang: step.8 compute advantage batch.keys: {}'.format(list(batch.keys)))
         with marked_timer("adv", timing_raw, color="brown"):
             batch = self._compute_advantage(batch, metrics=metrics)
 

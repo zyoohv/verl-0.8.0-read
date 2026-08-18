@@ -903,13 +903,14 @@ class AgentLoopWorker:
                     batch=batch,
                     non_tensor_batch=non_tensor_batch,
                 )
-                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.reward_loop_worker_handles: {self.reward_loop_worker_handles}')
+                # self.reward_loop_worker_handles : [Actor(RewardLoopWorker, ...), ...]
+                # ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.reward_loop_worker_handles: {self.reward_loop_worker_handles}')
                 selected_reward_loop_worker_handle = random.choice(self.reward_loop_worker_handles)
                 result = await selected_reward_loop_worker_handle.compute_score.remote(data)
                 final_output.reward_score = result["reward_score"]
                 final_output.extra_fields["reward_extra_info"] = result["reward_extra_info"]
-                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output.reward_score: {final_output.reward_score}')
-                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output: {final_output}')
+                # ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output.reward_score: {final_output.reward_score}')
+                # ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output: {final_output}')
             final_output.metrics.compute_score = timing["compute_score"]
 
     async def _compute_teacher_logprobs(
