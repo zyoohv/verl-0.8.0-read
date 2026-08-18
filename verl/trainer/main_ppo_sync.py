@@ -388,11 +388,11 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             logger.warning(f"Empty output for prompt {uid}_{session_id}")
             return
 
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess _compute_score.inputs {output}')
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs {outputs}')
         await self._compute_score(outputs, kwargs=kwargs)
 
         final_output = outputs[-1]
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess final_output.reward_score {final_output.reward_score}')
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.final_output.reward_score {final_output.reward_score}')
         # TODO: Support output:list[AgentLoopOutput]
         await self._compute_teacher_logprobs(
             final_output,
@@ -406,7 +406,6 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             for output in outputs[:-1]:
                 output.reward_score = final_output.reward_score
                 output.extra_fields["reward_extra_info"] = final_output.extra_fields["reward_extra_info"]
-
 
         # NOTE: agent loop may has multiple outputs, put each output into TransferQueue.
         # key format: {uid}_{session_id}_{index}
@@ -1698,9 +1697,10 @@ class PPOTrainer:
         self._shutdown_dump_executor()
 
     def step(self, batch_dict: dict, metrics: dict, timing_raw: dict) -> KVBatchMeta:
+        ytk.comm.plog('yoohvzhang: step.0 batch_dict: {}'.format(list(batch_dict.keys())))
+
         # 1. put batch to agent loop manager
         batch_dict["uid"] = np.array([str(uuid.uuid4()) for _ in range(len(batch_dict["raw_prompt"]))], dtype=object)
-        ytk.comm.plog('yoohvzhang: step.1 batch_dict: {}'.format(list(batch_dict.keys())))
         if self.config.algorithm.adv_estimator == core_algos.AdvantageEstimator.REMAX:
             rollout_n = self.config.actor_rollout_ref.rollout.n
             sampled_batch_dict = batch_dict.copy()
@@ -1716,13 +1716,16 @@ class PPOTrainer:
         else:
             batch = tu.get_tensordict(batch_dict)
         tu.assign_non_tensor_data(batch, "global_steps", self.global_steps)
+        ytk.comm.plog('yoohvzhang: step.1 generate_sequences.input: {}'.format(list(batch.keys())))
         self.async_rollout_manager.generate_sequences(batch)
+        ytk.comm.plog('yoohvzhang: step.1 generate_sequences.output: {}'.format(list(batch.keys())))
 
         # 2. sample batch from replay buffer
         with marked_timer("gen", timing_raw, color="red"):
             batch = self.replay_buffer.sample(partition_id="train", global_steps=self.global_steps)
         batch.extra_info["temperature"] = self.config.actor_rollout_ref.rollout.temperature
         self.checkpoint_manager.sleep_replicas()
+        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer: {}'.format(list(batch.keys())))
 
         # 3. [OPTIONAL] compute reward score with colocated reward model
         if self.reward_loop_manager.reward_loop_worker_handles is None:
