@@ -724,7 +724,7 @@ class AgentLoopWorker:
                 output.multi_modal_data.get("audios") if output.multi_modal_data else None
             ),
         )
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._agent_loop_postprocess _compute_score.inputs [{output}]')
+        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._agent_loop_postprocess _compute_score.inputs [{output}]')
         await self._compute_score([output], kwargs=kwargs)
         await self._compute_teacher_logprobs(
             output,

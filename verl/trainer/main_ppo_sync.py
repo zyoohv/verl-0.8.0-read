@@ -389,9 +389,9 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             return
 
         # [AgentLoopOutput(prompt_ids=...)]
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs before {outputs}')
+        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs before {outputs}')
         await self._compute_score(outputs, kwargs=kwargs)
-        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs after {outputs}')
+        # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.outputs after {outputs}')
 
         final_output = outputs[-1]
         # final_output.reward_score : float
@@ -436,8 +436,12 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             field["input_ids"] = input_ids
             field["position_ids"] = position_ids
             field["multi_modal_inputs"] = multi_modal_inputs
-            if i == 0:
-                ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.field.keys {list(field.keys())}')
+            # ['num_turns', 'metrics', 'extra_fields', 'mm_processor_kwargs', 'prompts', 'responses', 'response_mask', 
+            # 'rm_scores', 'session_id', 'dummy_tensor', 'data_source', 'prompt', 'ability', 'reward_model', 'extra_info', 
+            # 'raw_prompt', 'index', 'tools_kwargs', 'interaction_kwargs', 'uid', 'global_steps', 'loss_mask', 'input_ids', 
+            # 'position_ids', 'multi_modal_inputs']
+            # if i == 0:
+                # ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess.field.keys {list(field.keys())}')
             fields.append(field)
             prompt_len, response_len = field["prompts"].size(0), field["responses"].size(0)
             tags.append(
@@ -659,7 +663,7 @@ class PPOTrainer:
         wg_kwargs["device_name"] = self.config.trainer.device
         logger.info(f"worker group kwargs: {wg_kwargs}")
 
-        ytk.comm.plog(f'yoohvzhang: self.resource_pool_to_cls: {self.resource_pool_to_cls}')
+        # ytk.comm.plog(f'yoohvzhang: self.resource_pool_to_cls: {self.resource_pool_to_cls}')
         for resource_pool, class_dict in self.resource_pool_to_cls.items():
             if not class_dict:
                 continue
