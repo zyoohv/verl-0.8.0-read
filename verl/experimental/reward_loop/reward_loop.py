@@ -139,6 +139,7 @@ class RewardLoopWorker:
         ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.reward_manager = {self.reward_manager}')
 
     async def compute_score_batch(self, data: DataProto) -> list[dict]:
+        ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.compute_score_batch')
         tasks = []
         for i in range(len(data)):
             tasks.append(asyncio.create_task(self.compute_score(data[i : i + 1])))
@@ -147,7 +148,7 @@ class RewardLoopWorker:
         return outputs
 
     async def compute_score(self, data: DataProto) -> dict:
-        # ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.compute_score, path = {self.config.reward.custom_reward_function.path}')
+        ytk.comm.plog(f'yoohvzhang: RewardLoopWorker.compute_score, path = {self.config.reward.custom_reward_function.path}')
         if self.config.reward.custom_reward_function.path is not None:
             # directly use user-customized reward function
             return await self.reward_manager.run_single(data)

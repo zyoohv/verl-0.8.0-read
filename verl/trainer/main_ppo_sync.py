@@ -388,9 +388,11 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             logger.warning(f"Empty output for prompt {uid}_{session_id}")
             return
 
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess _compute_score.inputs {output}')
         await self._compute_score(outputs, kwargs=kwargs)
 
         final_output = outputs[-1]
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorkerTQ._agent_loop_postprocess final_output.reward_score {final_output.reward_score}')
         # TODO: Support output:list[AgentLoopOutput]
         await self._compute_teacher_logprobs(
             final_output,
@@ -404,6 +406,7 @@ class AgentLoopWorkerTQ(AgentLoopWorker):
             for output in outputs[:-1]:
                 output.reward_score = final_output.reward_score
                 output.extra_fields["reward_extra_info"] = final_output.extra_fields["reward_extra_info"]
+
 
         # NOTE: agent loop may has multiple outputs, put each output into TransferQueue.
         # key format: {uid}_{session_id}_{index}
@@ -722,7 +725,8 @@ class PPOTrainer:
             agent_loop_manager_cls = load_class_from_fqn(manager_class_fqn, "AgentLoopManager")
         else:
             agent_loop_manager_cls = AgentLoopManagerTQ
-        ytk.comm.plog(f'yoohvzhang: agent_loop_manager_cls: {agent_loop_manager_cls}')
+        # ytk.comm.plog(f'yoohvzhang: PPOTrainer.init_workers.agent_loop_manager_cls: {agent_loop_manager_cls}')
+        ytk.comm.plog(f'yoohvzhang: PPOTrainer.reward_loop_manager.reward_loop_workers = {self.reward_loop_manager.reward_loop_workers}')
         self.async_rollout_manager = agent_loop_manager_cls.create(
             config=self.config,
             llm_client=self.llm_server_manager.get_client(),

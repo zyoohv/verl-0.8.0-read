@@ -721,6 +721,7 @@ class AgentLoopWorker:
                 output.multi_modal_data.get("audios") if output.multi_modal_data else None
             ),
         )
+        ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._agent_loop_postprocess _compute_score.inputs [{output}]')
         await self._compute_score([output], kwargs=kwargs)
         await self._compute_teacher_logprobs(
             output,
@@ -900,10 +901,12 @@ class AgentLoopWorker:
                     batch=batch,
                     non_tensor_batch=non_tensor_batch,
                 )
+                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.reward_loop_worker_handles: {self.reward_loop_worker_handles}')
                 selected_reward_loop_worker_handle = random.choice(self.reward_loop_worker_handles)
                 result = await selected_reward_loop_worker_handle.compute_score.remote(data)
                 final_output.reward_score = result["reward_score"]
                 final_output.extra_fields["reward_extra_info"] = result["reward_extra_info"]
+                ytk.comm.plog(f'yoohvzhang: AgentLoopWorker._compute_score.final_output.reward_score: {final_output.reward_score}')
             final_output.metrics.compute_score = timing["compute_score"]
 
     async def _compute_teacher_logprobs(
