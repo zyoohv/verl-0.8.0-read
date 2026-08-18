@@ -1725,7 +1725,8 @@ class PPOTrainer:
             batch = self.replay_buffer.sample(partition_id="train", global_steps=self.global_steps)
         batch.extra_info["temperature"] = self.config.actor_rollout_ref.rollout.temperature
         self.checkpoint_manager.sleep_replicas()
-        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer: {}'.format(list(batch.keys())))
+        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer dtype: {}'.format(type(batch)))
+        ytk.comm.plog('yoohvzhang: step.2 sample batch from replay buffer keys: {}'.format(list(batch.keys())))
 
         # 3. [OPTIONAL] compute reward score with colocated reward model
         if self.reward_loop_manager.reward_loop_worker_handles is None:

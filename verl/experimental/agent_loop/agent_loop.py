@@ -73,6 +73,8 @@ from verl.workers.rollout.llm_server import LLMServerClient
 logger = logging.getLogger(__file__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
 
+import yoohtoolkits as ytk
+
 DEFAULT_ROUTING_CACHE_SIZE = 10000
 
 
